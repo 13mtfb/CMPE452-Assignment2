@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 //contains structs and functions for the wine dataset
 
@@ -12,3 +13,4 @@ struct wine {
 //function declarations
 wine parseInput(std::string);
 void printWine(wine);
+void normalize(std::vector <wine>&);
