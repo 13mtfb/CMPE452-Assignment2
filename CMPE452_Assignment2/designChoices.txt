@@ -1,0 +1,2 @@
+data precprocessing:
+	1. In order for the C++ program to read in the data, the header was removed from the csv file
