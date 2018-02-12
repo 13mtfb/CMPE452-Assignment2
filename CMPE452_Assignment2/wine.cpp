@@ -36,6 +36,10 @@ wine parseInput(std::string line) {
 			quality = subString.substr(subString.find('"')+1, 1);
 			value = atof(quality.c_str());
 			input.quality = value;
+			for (int i = 0; i < 4; i++) {//initialize output array
+				if (value - 5 == i) { input.output[i] = 1; }
+				else { input.output[i] = 0;  }
+			}
 		}
 	}
 	return input;
