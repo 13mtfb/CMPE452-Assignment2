@@ -1,2 +1,3 @@
 data precprocessing:
 	1. In order for the C++ program to read in the data, the header was removed from the csv file
+	2. It was determined that the minimum value for wine quality was 5 and the max value was 8, therefore we only need 4 output neurons to classify this dataset

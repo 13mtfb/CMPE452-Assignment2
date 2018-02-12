@@ -7,7 +7,12 @@ struct wine {
 	//input features
 	double input[11];
 	//desired output
-	int quality;
+	//output array is structured by quality as follows:
+	//5: {1,0,0,0}
+	//6: {0,1,0,0}
+	//7: {0,0,1,0}
+	//8: {0,0,0,1}
+	int quality[4];
 };
 
 //function declarations

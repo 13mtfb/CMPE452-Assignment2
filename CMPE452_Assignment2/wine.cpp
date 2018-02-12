@@ -65,6 +65,7 @@ void normalize(std::vector<wine> &w) {
 
 	double min_element[11];
 	double max_element[11];
+	double min_quality, max_quality;
 
 	//determine the max and min of the dataset for each feature
 	for (int f = 0; f < 11; f++) {
@@ -75,9 +76,15 @@ void normalize(std::vector<wine> &w) {
 		max_element[f] = dummy.input[f];
 	}
 
-	std::cout << min_element[0] << " " << max_element[0] << std::endl;
-	std::cout << min_element[10] << " " << max_element[10] << std::endl;
+	//calculate the min and max quality to determine the number of output neurons needed to classify the data
+	wine dummy;
+	dummy = *std::min_element(w.begin(), w.end(), [&](wine e1, wine e2) {return e1.quality < e2.quality; });
+	min_quality = dummy.quality;
+	dummy = *std::max_element(w.begin(), w.end(), [&](wine e1, wine e2) {return e1.quality < e2.quality; });
+	max_quality = dummy.quality;
 
+	std::cout << "min quality: " << min_quality << std::endl;
+	std::cout << "max quality: " << max_quality << std::endl;
 
 	//iterate over each element
 	for (int e = 0; e < w.size(); e++) {
