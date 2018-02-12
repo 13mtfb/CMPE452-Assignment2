@@ -13,7 +13,7 @@ struct wine {
 	//6: {0,1,0,0}
 	//7: {0,0,1,0}
 	//8: {0,0,0,1}
-	int output[4];
+	double output[4];
 };
 
 //function declarations
