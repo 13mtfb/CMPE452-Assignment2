@@ -35,18 +35,10 @@ private:
 	}
 
 	static double SigmoidFunction(double x)
-	{
-		if (x < -45.0) return 0.0;
-		else if (x > 45.0) return 1.0;
-		else return 1.0 / (1.0 + exp(-x));
+	{ 
+		return 1.0 / (1.0 + exp(-x));
 	}
 
-	static double HyperTanFunction(double x)
-	{
-		if (x < -10.0) return -1.0;
-		else if (x > 10.0) return 1.0;
-		else return tanh(x);
-	}
 
 public:
 	//constructor definition

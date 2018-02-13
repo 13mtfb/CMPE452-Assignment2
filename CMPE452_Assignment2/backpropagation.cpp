@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "backpropagation.h"
 
 NeuralNetwork::NeuralNetwork(int num_Input, int num_Hidden, int num_Output)
@@ -28,62 +28,65 @@ NeuralNetwork::NeuralNetwork(int num_Input, int num_Hidden, int num_Output)
 	for (int i = 0; i < numOutput; i++)hoPrevBiasesDelta[i] = 0;
 }
 
-void NeuralNetwork::UpdateWeights(double *tValues, double eta, double alpha)
+//method uses the backpropagation algorigthm to update the weight/bias values
+void NeuralNetwork::UpdateWeights(double *desiredOutput, double learningRate, double momentum)
 {
-	// 1. compute output gradients
+	//find compute output gradients
+	//this is the delta value found in the backpropagation notes
 	for (int i = 0; i < numOutput; ++i)
 	{
-		double derivative = (1 - outputs[i]) * (1 + outputs[i]); // derivative of tanh
-		oGrads[i] = derivative * (tValues[i] - outputs[i]);
+		//compute the derivative of sigmoid function
+		double derivative = (1 - outputs[i]) * outputs[i]; //f'(a2j) 
+		oGrads[i] = derivative * (desiredOutput[i] - outputs[i]); //δj = ej * f'(a2j)
 	}
 
-	// 2. compute hidden gradients
+	//find hidden gradients
 	for (int i = 0; i < numHidden; ++i)
 	{
 		double derivative = (1 - ihOutputs[i]) * ihOutputs[i]; // (1 / 1 + exp(-x))'  -- using output value of neuron
 		double sum = 0.0;
-		for (int j = 0; j < numOutput; ++j) // each hidden delta is the sum of numOutput terms
-			sum += oGrads[j] * hoWeights[i][j]; // each downstream gradient * outgoing weight
+		for (int j = 0; j < numOutput; ++j)
+			sum += oGrads[j] * hoWeights[i][j]; 
 		hGrads[i] = derivative * sum;
 	}
 
-	// 3. update input to hidden weights (gradients must be computed right-to-left but weights can be updated in any order
-	for (int i = 0; i < numInput; ++i) // 0..2 (3)
+	//Update input to hidden weights
+	for (int i = 0; i < numInput; ++i)
 	{
-		for (int j = 0; j < numHidden; ++j) // 0..3 (4)
+		for (int j = 0; j < numHidden; ++j)
 		{
-			double delta = eta * hGrads[j] * inputs[i]; // compute the new delta
+			double delta = learningRate * hGrads[j] * inputs[i]; // compute the new delta
 			ihWeights[i][j] += delta; // update
-			ihWeights[i][j] += alpha * ihPrevWeightsDelta[i][j]; // add momentum using previous delta. on first pass old value will be 0.0 but that's OK.
+			ihWeights[i][j] += momentum * ihPrevWeightsDelta[i][j]; //use momentum to keep going
 		}
 	}
 
-	// 3b. update input to hidden biases
+	//Update input to hidden biases
 	for (int i = 0; i < numHidden; ++i)
 	{
-		double delta = eta * hGrads[i] * 1.0; // the 1.0 is the constant input for any bias; could leave out
+		double delta = learningRate * hGrads[i] * 1.0;
 		ihBiases[i] += delta;
-		ihBiases[i] += alpha * ihPrevBiasesDelta[i];
+		ihBiases[i] += momentum * ihPrevBiasesDelta[i];
 	}
 
-	// 4. update hidden to output weights
-	for (int i = 0; i < numHidden; ++i)  // 0..3 (4)
+	//Update hidden to output weights
+	for (int i = 0; i < numHidden; ++i)
 	{
-		for (int j = 0; j < numOutput; ++j) // 0..1 (2)
+		for (int j = 0; j < numOutput; ++j)
 		{
-			double delta = eta * oGrads[j] * ihOutputs[i];  // see above: ihOutputs are inputs to next layer
+			double delta = learningRate * oGrads[j] * ihOutputs[i]; 
 			hoWeights[i][j] += delta;
-			hoWeights[i][j] += alpha * hoPrevWeightsDelta[i][j];
+			hoWeights[i][j] += momentum * hoPrevWeightsDelta[i][j];
 			hoPrevWeightsDelta[i][j] = delta;
 		}
 	}
 
-	// 4b. update hidden to output biases
+	//Update hidden to output biases
 	for (int i = 0; i < numOutput; ++i)
 	{
-		double delta = eta * oGrads[i] * 1.0;
+		double delta = learningRate * oGrads[i] * 1.0;
 		hoBiases[i] += delta;
-		hoBiases[i] += alpha * hoPrevBiasesDelta[i];
+		hoBiases[i] += momentum * hoPrevBiasesDelta[i];
 		hoPrevBiasesDelta[i] = delta;
 	}
 } // UpdateWeights
@@ -160,14 +163,21 @@ double * NeuralNetwork::ComputeOutputs(double *xValues)
 		inputs[i] = xValues[i];
 
 	for (int j = 0; j < numHidden; ++j)  // compute input-to-hidden weighted sums
-		for (int i = 0; i < numInput; ++i)
+		for (int i = 0; i < numInput; ++i){
 			ihSums[j] += inputs[i] * ihWeights[i][j];
+		}
+
 
 	for (int i = 0; i < numHidden; ++i)  // add biases to input-to-hidden sums
 		ihSums[i] += ihBiases[i];
 
-	for (int i = 0; i < numHidden; ++i)   // determine input-to-hidden output
+	//std::cout << "ihOutputs: ";
+	for (int i = 0; i < numHidden; ++i) {   // determine input-to-hidden output
 		ihOutputs[i] = SigmoidFunction(ihSums[i]);
+		//std::cout << ihOutputs[i] << " ";
+	}
+	//std::cout << std::endl;
+
 
 	for (int j = 0; j < numOutput; ++j)   // compute hidden-to-output weighted sums
 		for (int i = 0; i < numHidden; ++i)
@@ -177,7 +187,7 @@ double * NeuralNetwork::ComputeOutputs(double *xValues)
 		hoSums[i] += hoBiases[i];
 
 	for (int i = 0; i < numOutput; ++i)   // determine hidden-to-output result
-		outputs[i] = HyperTanFunction(hoSums[i]);
+		outputs[i] = SigmoidFunction(hoSums[i]);
 
 	return outputs;
 } // ComputeOutputs
