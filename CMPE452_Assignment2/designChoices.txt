@@ -1,3 +1,33 @@
-data precprocessing:
+data prec-processing:
 	1. In order for the C++ program to read in the data, the header was removed from the csv file
-	2. It was determined that the minimum value for wine quality was 5 and the max value was 8, therefore we only need 4 output neurons to classify this dataset
+	2. It was determined that the minimum value for wine quality was 5 and the max value was 8, however there were no wine qualities of 6.
+		-From this information, a Neural network with 3 output neurons was used - to classify qualities 5, 7, and 8
+	3. Features were removed by trial-and-error, using a heuristic based on total successful classifications of the testing dataset
+		-It was determined that 6 of the 11 features had the greatest impact on the number of successfull classifications:
+			1. Fixed Acidity
+			2. Volatic Acidity
+			3. Residual Sugar
+			4. Chlorides
+			5. Total Sulfur Dioxide
+			6. Density
+	4. Each feature was normalized to the range 0-1 in order to not worry about initial weight values or biases for the input-hidden connections
+		-normalized = x - min(x) / ( max(x) - min(x) )
+
+Neural Network Architecture
+	1. The initial weights were set using the function 0.25+0.01*i. This small delta between weights prevented them from being trained to the same values (for 
+	input to hidden connections) and to attempt to bias higher weigths to the 8 quality output neuron which seemed to suffer in classification from lack of training
+	samples
+	2. The network architecture was a 6-5-3 feedforward network. The input and output nodes were fixed by the data-preprocessing above. The hidden neurons were 
+	determined using trial-and-error.
+	3. The learning rate was set to 1.1 and the momentuum parameter was set to 0.01. It was found that a higher momentum rate caused performance (# correct classifications)
+	to suffer, therefore it was set quite low.
+	4. All node output functions used the sigmoid function. This was the only output function considered due to the large number of other variables which I chose
+	to experiment with instead.
+	5. The backpropagation was terminated using a minimum sum squared error less than 0.1 for an entire epoch, or a maximum number of iterations set to 2000.
+	Practically, the program never reached this error threshold, and always terminated on the maximum number of iterations.
+
+Training/Testing Data
+	1. A split of 75% training data to 25% testing data was used to evaluated the network. The split attempted to avoid any significant statistical differences
+	between the sets by adding every fourth input into the testing dataset. 
+	2. In appeared that the network suffered in classifying the quality 8 wines due to a significantly less number of available samples as compared to the other
+	two classes.

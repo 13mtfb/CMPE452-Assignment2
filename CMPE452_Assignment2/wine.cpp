@@ -51,7 +51,7 @@ wine parseInput(std::string line) {
 
 //print a wine structure verbosely
 void printWine(wine print) {
-	std::cout << "fixed acidity: " << print.input[0];
+	/*std::cout << "fixed acidity: " << print.input[0];
 	std::cout << " volatile acidity: " << print.input[1];
 	std::cout << " citric acid: " << print.input[2];
 	std::cout << " residual sugar " << print.input[3];
@@ -63,7 +63,15 @@ void printWine(wine print) {
 	std::cout << " sulphates: " << print.input[9];
 	std::cout << " alcohol: " << print.input[10];
 	std::cout << std::endl;
-	std::cout << "quality: " << print.quality << std::endl;
+	std::cout << "quality: " << print.quality << std::endl;\*/
+
+	std::setprecision(2); 
+	std::fixed;
+
+	for (int i = 0; i < 11; i++) {
+		std::cout << print.input[i] << "\t";
+	}
+	std::cout << print.quality << "\t";
 }
 
 //normalize each input feature on the wine dataset into the range [0 1]

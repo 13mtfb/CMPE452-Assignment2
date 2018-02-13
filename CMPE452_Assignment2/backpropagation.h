@@ -28,12 +28,6 @@ private:
 	double **hoPrevWeightsDelta;
 	double *hoPrevBiasesDelta;
 
-	static double StepFunction(double x) // an activation function that isn't compatible with back-propagation bcause it isn't differentiable
-	{
-		if (x > 0.0) return 1.0;
-		else return 0.0;
-	}
-
 	static double SigmoidFunction(double x)
 	{ 
 		return 1.0 / (1.0 + exp(-x));
